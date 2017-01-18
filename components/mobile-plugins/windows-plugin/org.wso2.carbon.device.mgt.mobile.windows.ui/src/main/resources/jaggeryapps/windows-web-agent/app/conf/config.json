@@ -31,15 +31,15 @@
             "location" : "%http.ip%/windows-web-agent/public/mdm.page.enrollments.ios.download-agent/asset/ios-agent.ipa",
             "bundleID" : "org.wso2.carbon.emm.iOSMDMAgent",
             "version" : "1.0",
-            "appName" : "EMM iOS Agent"
+            "appName" : "IoT Server iOS Agent"
         }
     },
     "androidAgentApp" : "android-agent.apk",
     "windowsConfigRoot" : "%http.ip%/api/device-mgt/windows/v1.0/federated/bst/authentication",
     "generalConfig" : {
         "host" : "%http.ip%",
-        "companyName" : "WSO2 Enterprise Mobility Manager",
-        "browserTitle" : "WSO2 EMM",
+        "companyName" : "WSO2 IoT Server",
+        "browserTitle" : "WSO2 IoT Server",
         "copyrightText" : "\u00A9 %date-year%, WSO2 Inc. (http://www.wso2.org) All Rights Reserved."
     },
     "isOAuthEnabled" : true,
