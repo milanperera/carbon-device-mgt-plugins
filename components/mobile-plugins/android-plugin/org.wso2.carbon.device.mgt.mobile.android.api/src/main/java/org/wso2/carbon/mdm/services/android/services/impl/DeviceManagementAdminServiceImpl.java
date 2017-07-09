@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.mdm.services.android.services.impl;
 
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
@@ -27,37 +28,8 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.CommandOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
-import org.wso2.carbon.mdm.services.android.bean.ApplicationInstallation;
-import org.wso2.carbon.mdm.services.android.bean.ApplicationUninstallation;
-import org.wso2.carbon.mdm.services.android.bean.ApplicationUpdate;
-import org.wso2.carbon.mdm.services.android.bean.BlacklistApplications;
-import org.wso2.carbon.mdm.services.android.bean.Camera;
-import org.wso2.carbon.mdm.services.android.bean.DeviceEncryption;
-import org.wso2.carbon.mdm.services.android.bean.DeviceLock;
-import org.wso2.carbon.mdm.services.android.bean.ErrorResponse;
-import org.wso2.carbon.mdm.services.android.bean.LockCode;
-import org.wso2.carbon.mdm.services.android.bean.Notification;
-import org.wso2.carbon.mdm.services.android.bean.PasscodePolicy;
-import org.wso2.carbon.mdm.services.android.bean.UpgradeFirmware;
-import org.wso2.carbon.mdm.services.android.bean.Vpn;
-import org.wso2.carbon.mdm.services.android.bean.WebClip;
-import org.wso2.carbon.mdm.services.android.bean.Wifi;
-import org.wso2.carbon.mdm.services.android.bean.WipeData;
-import org.wso2.carbon.mdm.services.android.bean.wrapper.ApplicationInstallationBeanWrapper;
-import org.wso2.carbon.mdm.services.android.bean.wrapper.ApplicationUninstallationBeanWrapper;
-import org.wso2.carbon.mdm.services.android.bean.wrapper.ApplicationUpdateBeanWrapper;
-import org.wso2.carbon.mdm.services.android.bean.wrapper.BlacklistApplicationsBeanWrapper;
-import org.wso2.carbon.mdm.services.android.bean.wrapper.CameraBeanWrapper;
-import org.wso2.carbon.mdm.services.android.bean.wrapper.DeviceLockBeanWrapper;
-import org.wso2.carbon.mdm.services.android.bean.wrapper.EncryptionBeanWrapper;
-import org.wso2.carbon.mdm.services.android.bean.wrapper.LockCodeBeanWrapper;
-import org.wso2.carbon.mdm.services.android.bean.wrapper.NotificationBeanWrapper;
-import org.wso2.carbon.mdm.services.android.bean.wrapper.PasswordPolicyBeanWrapper;
-import org.wso2.carbon.mdm.services.android.bean.wrapper.UpgradeFirmwareBeanWrapper;
-import org.wso2.carbon.mdm.services.android.bean.wrapper.VpnBeanWrapper;
-import org.wso2.carbon.mdm.services.android.bean.wrapper.WebClipBeanWrapper;
-import org.wso2.carbon.mdm.services.android.bean.wrapper.WifiBeanWrapper;
-import org.wso2.carbon.mdm.services.android.bean.wrapper.WipeDataBeanWrapper;
+import org.wso2.carbon.mdm.services.android.bean.*;
+import org.wso2.carbon.mdm.services.android.bean.wrapper.*;
 import org.wso2.carbon.mdm.services.android.exception.BadRequestException;
 import org.wso2.carbon.mdm.services.android.exception.UnexpectedServerErrorException;
 import org.wso2.carbon.mdm.services.android.services.DeviceManagementAdminService;
@@ -1001,6 +973,46 @@ public class DeviceManagementAdminServiceImpl implements DeviceManagementAdminSe
             operation.setType(Operation.Type.PROFILE);
             operation.setPayLoad(webClip.toJSON());
             return AndroidAPIUtils.getOperationResponse(webClipBeanWrapper.getDeviceIDs(), operation);
+        } catch (InvalidDeviceException e) {
+            String errorMessage = "Invalid Device Identifiers found.";
+            log.error(errorMessage, e);
+            throw new BadRequestException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage(errorMessage).build());
+        } catch (OperationManagementException e) {
+            String errorMessage = "Issue in retrieving operation management service instance";
+            log.error(errorMessage, e);
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(errorMessage).build());
+        } catch (DeviceManagementException e) {
+            String errorMessage = "Issue in retrieving device management service instance";
+            log.error(errorMessage, e);
+            throw new UnexpectedServerErrorException(
+                    new ErrorResponse.ErrorResponseBuilder().setCode(500l).setMessage(errorMessage).build());
+        }
+    }
+
+    @POST
+    @Path("send-app-conf")
+    @Override
+    public Response sendApplicationConfiguration(ApplicationRestrictionBeanWrapper applicationRestrictionBeanWrapper) {
+        if (log.isDebugEnabled()) {
+            log.debug("Invoking 'send application configuration' operation");
+        }
+
+        try {
+            if (applicationRestrictionBeanWrapper == null || applicationRestrictionBeanWrapper.getOperation() == null) {
+                String errorMessage = "The payload of the application configuration operation is incorrect";
+                log.error(errorMessage);
+                throw new BadRequestException(
+                        new ErrorResponse.ErrorResponseBuilder().setCode(400l).setMessage(errorMessage).build());
+            }
+            ApplicationRestriction applicationRestriction = applicationRestrictionBeanWrapper.getOperation();
+            ProfileOperation operation = new ProfileOperation();
+            operation.setCode(AndroidConstants.OperationCodes.REMOTE_APP_CONFIG);
+            operation.setType(Operation.Type.PROFILE);
+            operation.setPayLoad(applicationRestriction.toJSON());
+            return AndroidAPIUtils.getOperationResponse(applicationRestrictionBeanWrapper.getDeviceIDs(),
+                    operation);
         } catch (InvalidDeviceException e) {
             String errorMessage = "Invalid Device Identifiers found.";
             log.error(errorMessage, e);

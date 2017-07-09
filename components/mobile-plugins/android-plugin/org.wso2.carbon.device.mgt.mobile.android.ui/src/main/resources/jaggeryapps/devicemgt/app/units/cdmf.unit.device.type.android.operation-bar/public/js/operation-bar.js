@@ -257,6 +257,16 @@ var generatePayload = function (operationCode, operationData, deviceList) {
                 }
             };
             break;
+        case androidOperationConstants["APP_RESTRICTION_OPERATION_CODE"]:
+            operationType = operationTypeConstants["PROFILE"];
+            payload = {
+                "operation": {
+                    //"message" : operationData["message"]
+                    "appIdentifier": operationData["app-id"],
+                    "restrictionPayload": operationData["payload"]
+                }
+            };
+            break;
         case androidOperationConstants["UPGRADE_FIRMWARE"]:
             operationType = operationTypeConstants["PROFILE"];
             payload = {
@@ -433,5 +443,6 @@ var androidOperationConstants = {
     "SET_STATUS_BAR_DISABLED": "SET_STATUS_BAR_DISABLED",
     "APPLICATION_OPERATION_CODE": "APP-RESTRICTION",
     "SYSTEM_UPDATE_POLICY_CODE": "SYSTEM_UPDATE_POLICY",
-    "KIOSK_APPS_CODE": "KIOSK_APPS"
+    "KIOSK_APPS_CODE": "KIOSK_APPS",
+    "APP_RESTRICTION_OPERATION_CODE": "REMOTE_APP_CONFIG"
 };

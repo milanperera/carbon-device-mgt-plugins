@@ -102,6 +102,7 @@ public final class AndroidConstants {
         public static final String LOGCAT = "LOGCAT";
         public static final String APP_RESTRICTION = "APP-RESTRICTION";
         public static final String WORK_PROFILE = "WORK_PROFILE";
+        public static final String REMOTE_APP_CONFIG = "REMOTE_APP_CONFIG";
     }
 
     public final class StatusCodes {
